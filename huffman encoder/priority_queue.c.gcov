@@ -1,0 +1,74 @@
+        -:    0:Source:priority_queue.c
+        -:    0:Programs:4
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "priority_queue.h"
+        -:    6:
+       19:    7:Node* pq_enqueue(Node** a_head, void* a_value, int (*cmp_fn)(const void*, const void*)) {
+       19:    8:	Node* new = malloc(sizeof(Node));
+       19:    9:	*new = (Node) {.a_value = a_value, .next = NULL};
+        -:   10:
+       19:   11:	if(*a_head == NULL){
+        1:   12:		*a_head = new;
+       18:   13:	} else if(cmp_fn((*a_head) -> a_value, a_value) > 0) {
+        -:   14:		//printf("pass");
+        -:   15:		//printf("inside: %d\n", *(int*)((*a_head) -> a_value));
+        2:   16:		new -> next = *a_head;
+        2:   17:		*a_head = new;
+        -:   18:	} else {
+       16:   19:		Node* traverse = *a_head; 
+       16:   20:		int flag = 1;
+       85:   21:		while(flag){
+       69:   22:			if(traverse -> next == NULL){
+        7:   23:				flag = 0;
+        7:   24:			 	traverse -> next = new;
+        -:   25:				//printf("inside: %d\n", *(int*)(traverse -> a_value));
+       62:   26:			} else if(cmp_fn(traverse -> next -> a_value, a_value) > 0){
+        9:   27:					new -> next = traverse -> next;
+        9:   28:					traverse -> next = new;
+        9:   29:					flag = 0;
+        -:   30:			} else { 
+       53:   31:				traverse = traverse -> next;
+        -:   32:			}
+        -:   33:		}
+        -:   34:	}
+       19:   35:	return new;
+        -:   36:}
+        -:   37:
+       18:   38:Node* pq_dequeue(Node** a_head) {
+       18:   39:	Node* temp = *a_head;
+       18:   40:	if(*a_head != NULL){
+       18:   41:		*a_head = (*a_head) -> next;
+        -:   42:		//printf("dequeue: %d\n", *(int*)((*a_head) -> a_value));
+       18:   43:		temp -> next = NULL;
+        -:   44:	}
+        -:   45:	//printf("inside deq: %d\n", *(int*)((temp) -> a_value));
+       18:   46:	return temp;
+        -:   47:}
+        -:   48:
+        -:   49:
+    #####:   50:Node* stack_push(Node** a_head, void* a_value) {
+    #####:   51:	Node *new = malloc(sizeof(Node));
+    #####:   52:	*new = (Node) {.a_value = a_value, .next = *a_head}; 
+    #####:   53:	*a_head = new;
+    #####:   54:	return new;
+        -:   55:}
+        -:   56:
+    #####:   57:Node* stack_pop(Node** a_head) {
+    #####:   58:	return pq_dequeue(a_head);
+        -:   59:}
+        -:   60:
+    #####:   61:void destroy_list(Node** a_head, void (*destroy_value_fn)(void*)) {
+    #####:   62:	Node* temp = *a_head;
+        -:   63:	Node* next;
+    #####:   64:	while(temp != NULL){
+    #####:   65:		next = temp -> next;
+    #####:   66:		destroy_value_fn(temp -> a_value);
+    #####:   67:		free(temp);
+    #####:   68:		temp = next;
+        -:   69:	}
+    #####:   70:	*a_head = NULL;
+    #####:   71:}
+        -:   72:#define HUFFMAN_C_V1

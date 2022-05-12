@@ -1,0 +1,54 @@
+        -:    0:Source:bit_writer.c
+        -:    0:Graph:bit_writer.gcno
+        -:    0:Data:bit_writer.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <assert.h>
+        -:    2:#include "bit_writer.h"
+        -:    3:
+        2:    4:BitWriter open_bit_writer(const char* path) {
+        2:    5:	return (BitWriter) {.file = fopen(path, "w"), .current_byte = 0, .num_bits_left = 8};
+        -:    6:}
+        -:    7:
+       10:    8:void write_bits(BitWriter* a_writer, uint8_t bits, uint8_t num_bits_to_write) {
+      10*:    9:	assert(num_bits_to_write >= 0 && num_bits_to_write <= 8);
+      10*:   10:	assert(a_writer -> num_bits_left >= 1 && a_writer -> num_bits_left <=8);
+        -:   11:	
+       10:   12:	uint8_t emptyLeft = 0;
+       10:   13:	uint8_t overWrite = 0;
+       10:   14:	if(a_writer -> num_bits_left > num_bits_to_write){
+        4:   15:		emptyLeft = a_writer -> num_bits_left - num_bits_to_write;
+        -:   16:	} else {
+        6:   17:		overWrite = num_bits_to_write - a_writer -> num_bits_left;
+        -:   18:	}
+        -:   19:
+       10:   20:	uint8_t pulledBit = bits & ~(0xff << num_bits_to_write); //pull to write
+       10:   21:	a_writer -> current_byte |= (pulledBit >> overWrite << emptyLeft); //Deletes overwrite, aligns to left
+       10:   22:	a_writer -> num_bits_left = emptyLeft;
+       10:   23:	if(emptyLeft == 0){ //Writes if storage byte fills then reset
+        6:   24:		fputc(a_writer -> current_byte, a_writer -> file);
+        6:   25:		a_writer -> current_byte = 0;
+        6:   26:		a_writer -> num_bits_left = 8;
+        6:   27:		if(overWrite > 0){  //If there are more bits to be read
+        1:   28:			write_bits(a_writer, bits, overWrite);
+        -:   29:		}
+        -:   30:	}
+      10*:   31:	assert(a_writer -> num_bits_left >= 1 && a_writer -> num_bits_left <=8);
+       10:   32:}
+        -:   33:
+        2:   34:void flush_bit_writer(BitWriter* a_writer) {
+        2:   35:	if(a_writer -> num_bits_left != 8){
+        1:   36:		write_bits(a_writer, 0, a_writer -> num_bits_left);
+        -:   37:	} else {
+        1:   38:		a_writer -> current_byte = 0;
+        -:   39:	}
+        2:   40:}
+        -:   41:
+        2:   42:void close_bit_writer(BitWriter* a_writer) {
+        2:   43:	flush_bit_writer(a_writer);
+        2:   44:	fclose(a_writer -> file);
+        2:   45:	a_writer -> file = NULL;
+        2:   46:}
+        -:   47:
+        -:   48:#define __BIT_WRITER_C_V1__
+        -:   49:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab colorcolumn=96: */

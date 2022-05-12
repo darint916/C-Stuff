@@ -1,0 +1,35 @@
+        -:    0:Source:json.c
+        -:    0:Graph:json.gcno
+        -:    0:Data:json.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <ctype.h>
+        -:    3:#include <stdlib.h>
+        -:    4:#include <string.h>
+        -:    5:#include <limits.h>
+        -:    6:#include "clog.h"
+        -:    7:#include <stdbool.h>
+        -:    8:
+        3:    9:bool parse_int(int* a_value, char** a_pos){
+        3:   10:	int res = 0;
+        3:   11:	int flag = 1;
+        3:   12:	int negative = 1;
+        3:   13:	if(**a_pos == '-'){
+        1:   14:		++*a_pos;
+        1:   15:		negative = -1;
+        -:   16:	}
+        3:   17:	if(!isdigit(**a_pos)){
+        1:   18:		return false;
+        -:   19:	}
+       10:   20:	while(**a_pos != '\0' && flag){
+        8:   21:		if(isdigit(**a_pos)){
+        7:   22:			res = res * 10 + **a_pos - '0';
+        7:   23:			++*a_pos;
+        -:   24:		} else{
+        1:   25:			flag = 0;
+        -:   26:		}
+        -:   27:	}
+        2:   28:	*a_value = res * negative;
+        2:   29:	return true;
+        -:   30:}

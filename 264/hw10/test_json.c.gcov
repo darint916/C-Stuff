@@ -1,0 +1,50 @@
+        -:    0:Source:test_json.c
+        -:    0:Graph:test_json.gcno
+        -:    0:Data:test_json.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include "json.h"
+        -:    4:#include "miniunit.h"
+        -:    5:
+        1:    6:int _test_parse_int_valid(){
+        1:    7:	mu_start();
+        -:    8:	int result;
+        1:    9:	char* input = "0123";
+        1:   10:	char* pos = input;
+        1:   11:	bool is_success = parse_int(&result, &pos);
+       1*:   12:	mu_check(is_success);
+       1*:   13:	mu_check(pos == input + 4);
+       1*:   14:	mu_check(result == 123);
+        1:   15:	mu_end();
+        -:   16:}
+        -:   17:
+        1:   18:int _test_parse_int_invalid(){
+        1:   19:	mu_start();
+        -:   20:	int   result;  // will be initialized in parse_int(…)
+        1:   21:    char* input = "A";
+        1:   22:	char* pos = input;
+        1:   23:	bool is_success = parse_int(&result, &pos);
+       1*:   24:	mu_check(!is_success);  // because the input is valid
+       1*:   25:	mu_check(pos == input);
+        1:   26:	mu_end();
+        -:   27:}
+        1:   28:int _test_parse_int(){
+        1:   29:	mu_start();
+        -:   30:	int result;
+        1:   31:	char* input = "-124A";
+        1:   32:	char* pos = input;
+        1:   33:	bool is_success = parse_int(&result, &pos);
+       1*:   34:	mu_check(is_success);
+       1*:   35:	mu_check(pos = input + 5);
+       1*:   36:	mu_check(result == -124);
+        1:   37:	mu_end();
+        -:   38:}
+        -:   39:
+        1:   40:int main(int argc, char* argv[]) {
+       1*:   41:	mu_run(_test_parse_int_valid);
+       1*:   42:	mu_run(_test_parse_int);
+       1*:   43:	mu_run(_test_parse_int_invalid);
+        1:   44:	return EXIT_SUCCESS;
+        -:   45:}

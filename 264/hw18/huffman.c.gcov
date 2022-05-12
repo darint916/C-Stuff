@@ -1,0 +1,73 @@
+        -:    0:Source:huffman.c
+        -:    0:Programs:3
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "huffman.h"
+        -:    6:
+       15:    7:static int _compare_freq(const void* a, const void* b){
+       15:    8:	return ((TreeNode*)a) -> frequency - ((TreeNode*)b) -> frequency;
+        -:    9:}
+        -:   10:
+        2:   11:Node* make_huffman_pq(Frequencies freqs){
+        2:   12:	Node* head = NULL;
+        2:   13:	Node** a_head = &head;
+        -:   14:	TreeNode* new;
+      514:   15:	for(int i = 0; i <= 255; i++){
+      512:   16:		if(freqs[i] > 0){
+        4:   17:			new = malloc(sizeof(TreeNode));
+        4:   18:			*new = (TreeNode) {.character = i, .frequency = freqs[i], .right = NULL, .left = NULL};
+        4:   19:			pq_enqueue(a_head, new, _compare_freq);
+        -:   20:		}
+        -:   21:	}
+        2:   22:	return *a_head;
+        -:   23:}
+        -:   24:
+        5:   25:TreeNode* make_huffman_tree(Node* head){
+        -:   26:	//Terminators
+        5:   27:	if(head == NULL){
+        1:   28:		printf("COVERED \n\n");
+        1:   29:		return NULL;
+        -:   30:	}
+        4:   31:	else if(head -> next == NULL){
+        1:   32:		TreeNode* root = (TreeNode*)(head -> a_value);
+        -:   33:	//	printf("freed last \n");
+        1:   34:		free(head);
+        1:   35:		return root;
+        -:   36:	} 
+        -:   37:	
+        -:   38:	//Creating combination freq
+        3:   39:	TreeNode* tNode1 = (TreeNode*)(head -> a_value);
+        3:   40:	TreeNode* tNode2 = (TreeNode*)(head -> next -> a_value);
+        3:   41:	TreeNode* newNode = malloc(sizeof(TreeNode));
+        3:   42:	*newNode = (TreeNode) {.character = '\0', .frequency = tNode1 -> frequency + tNode2 -> frequency, .left = tNode1, .right = tNode2};
+        -:   43:	
+        -:   44:	//Queueing combo and destroying og pointers
+        3:   45:	pq_enqueue(&head, newNode, _compare_freq);
+        -:   46:	Node* prevHead;
+        9:   47:	for(int i = 0;i < 2; i++){
+        6:   48:		prevHead = pq_dequeue(&head);
+        6:   49:		prevHead -> a_value = NULL;
+        -:   50:		//printf("free extra head\n");
+        6:   51:		free(prevHead);
+        -:   52:	}
+        -:   53:	//printf("make tree ran\n");
+        3:   54:	return make_huffman_tree(head);
+        -:   55:}
+        -:   56:
+       15:   57:static void _destroy_treeNode(TreeNode* root){
+       15:   58:	if(root == NULL){
+        8:   59:		return;
+        -:   60:	}
+        7:   61:	_destroy_treeNode(root -> left);
+        7:   62:	_destroy_treeNode(root -> right);
+        7:   63:	free(root);
+        -:   64:}
+        -:   65:
+        1:   66:void destroy_huffman_tree(TreeNode** a_root){
+        1:   67:	_destroy_treeNode(*a_root);
+        1:   68:	*a_root = NULL;
+        1:   69:}
+        -:   70:
+        -:   71:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab: */

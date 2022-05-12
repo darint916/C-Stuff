@@ -1,0 +1,112 @@
+        -:    0:Source:huffman.c
+        -:    0:Programs:4
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "huffman.h"
+        -:    6:#include "bit_writer.h"
+        -:    7:
+        -:    8:typedef struct {
+        -:    9:	uint8_t bits;
+        -:   10:	int num_bits;
+        -:   11:} _Bitcode;
+        -:   12:
+       80:   13:static int _compare_freq(const void* a, const void* b){
+       80:   14:	return ((TreeNode*)a) -> frequency - ((TreeNode*)b) -> frequency;
+        -:   15:}
+        -:   16:
+        2:   17:Node* make_huffman_pq(Frequencies freqs){
+        2:   18:	Node* head = NULL;
+        2:   19:	Node** a_head = &head;
+        -:   20:	TreeNode* new;
+      514:   21:	for(int i = 0; i <= 255; i++){
+      512:   22:		if(freqs[i] > 0){
+       10:   23:			new = malloc(sizeof(*new));
+       10:   24:			*new = (TreeNode) {.character = i, .frequency = freqs[i], .right = NULL, .left = NULL};
+       10:   25:			pq_enqueue(a_head, new, _compare_freq);
+        -:   26:		}
+        -:   27:	}
+        2:   28:	return *a_head;
+        -:   29:}
+        -:   30:
+       11:   31:TreeNode* make_huffman_tree(Node* head){
+        -:   32:	//Terminators
+       11:   33:	if(head == NULL){
+        1:   34:		return NULL;
+       10:   35:	}else if(head -> next == NULL){
+        1:   36:		TreeNode* root = (TreeNode*)(head -> a_value);
+        1:   37:		free(head);
+        1:   38:		return root;
+        -:   39:	} 
+        -:   40:	
+        -:   41:	//Creating combination freq node
+        9:   42:	TreeNode* tNode1 = (TreeNode*)(head -> a_value);
+        9:   43:	TreeNode* tNode2 = (TreeNode*)(head -> next -> a_value);
+        9:   44:	TreeNode* newNode = malloc(sizeof(*newNode));
+        9:   45:	*newNode = (TreeNode) {.character = '\0', .frequency = tNode1 -> frequency + tNode2 -> frequency, .left = tNode1, .right = tNode2};
+        -:   46:	
+        -:   47:	//Queueing combo node and destroying original 2 pointers
+        9:   48:	pq_enqueue(&head, newNode, _compare_freq);
+        -:   49:	Node* prevHead;
+       27:   50:	for(int i = 0;i < 2; i++){
+       18:   51:		prevHead = pq_dequeue(&head);
+       18:   52:		free(prevHead);
+        -:   53:	}
+        9:   54:	return make_huffman_tree(head);
+        -:   55:}
+        -:   56:
+       39:   57:void write_coding_table(TreeNode* root, BitWriter* a_writer){
+       39:   58:	if(root == NULL){
+       20:   59:		return;
+        -:   60:	}
+       19:   61:	write_coding_table(root -> left, a_writer);
+       19:   62:	write_coding_table(root -> right, a_writer);
+       19:   63:	if(root -> character == '\0'){
+        9:   64:		write_bits(a_writer, 0, 1);
+        -:   65:	} else{
+       10:   66:		write_bits(a_writer, 0x1, 1);
+       10:   67:		write_bits(a_writer, root -> character, 8);
+        -:   68:	}
+        -:   69:}
+        -:   70:
+       19:   71:static void _find_bit(TreeNode* root, uint8_t route, uint8_t count, _Bitcode* character_code){
+       19:   72:	if(root -> right == NULL && root -> left == NULL){
+       10:   73:		character_code[root -> character] = (_Bitcode){.bits = route, .num_bits = count};
+       10:   74:		return;
+        -:   75:	}
+        9:   76:	_find_bit(root -> left, route << 1, count + 1, character_code);
+        9:   77:	_find_bit(root -> right, ~((~route) << 1), count + 1, character_code);
+        -:   78:}
+        -:   79:
+        1:   80:void write_compressed(TreeNode* root, BitWriter* a_writer, uint8_t* uncompressed_bytes){
+        -:   81:	_Bitcode char_map[256];
+      257:   82:	for(int i = 0; i < 256; i++){
+      256:   83:		char_map[i] = (_Bitcode){.bits = 0, .num_bits = 0};
+        -:   84:	}
+        1:   85:	_find_bit(root, 0, 0, char_map);
+        -:   86:	/*for(int i = 0; i<256;i++){             //Test to show array success
+        -:   87:		if(character_code[i].num_bits > 0){
+        -:   88:			printf("character:%c bits:%d numbits:%d\n",i, character_code[i].bits, character_code[i].num_bits);
+        -:   89:		}
+        -:   90:	}
+        -:   91:	*/
+       25:   92:	for(int i = 0; *(uncompressed_bytes + i) != '\0'; i++){
+       24:   93:		write_bits(a_writer, char_map[*(uncompressed_bytes + i)].bits, char_map[*(uncompressed_bytes + i)].num_bits);
+        -:   94:	}
+        1:   95:}
+       39:   96:static void _destroy_treeNode(TreeNode* root){
+       39:   97:	if(root == NULL){
+       20:   98:		return;
+        -:   99:	}
+       19:  100:	_destroy_treeNode(root -> left);
+       19:  101:	_destroy_treeNode(root -> right);
+       19:  102:	free(root);
+        -:  103:}
+        -:  104:
+        1:  105:void destroy_huffman_tree(TreeNode** a_root){
+        1:  106:	_destroy_treeNode(*a_root);
+        1:  107:	*a_root = NULL;
+        1:  108:}
+        -:  109:
+        -:  110:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab: */

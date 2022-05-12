@@ -1,0 +1,49 @@
+set logging file gdb.2.log
+set logging on
+set history filename gdb.2.history
+set history save
+run
+backtrace
+set logging file gdb.2.log
+set logging on
+set history filename gdb.2.history
+set history save
+info breakpoints
+break prime_factor.c
+break print_prime_factors 
+run
+c
+c
+c
+c
+until
+help unttil
+help until
+until
+list
+print n
+print i
+break prime_factor.c:34
+continue
+list
+reverse-continue
+reverse-step
+run
+c
+list
+step
+list
+step
+print n
+print i
+step
+print n
+list
+step
+p n
+p i
+step
+list
+step
+finish
+quit

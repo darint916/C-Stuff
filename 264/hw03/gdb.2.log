@@ -1,0 +1,166 @@
+Starting program: /home/shay/a/tsai169/264/hw03/prime_factor 
+[Inferior 1 (process 24525) exited normally]
+No stack.
+Error detected on fd 0
+error detected on stdin
+No breakpoints or watchpoints.
+Function "prime_factor.c" not defined.
+Breakpoint 1 at 0x4005e0: file prime_factor.c, line 17.
+Starting program: /home/shay/a/tsai169/264/hw03/prime_factor 
+
+Breakpoint 1, print_prime_factors (n=6) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=1) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=0) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=48) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=49) at prime_factor.c:17
+17	    if(n <= 0) {
+21	        printf("Prime factors of %d:", n);
+Undefined command: "unttil".  Try "help".
+Execute until past the current line or past a LOCATION.
+Execute until the program reaches a source line greater than the current
+or a specified location (same args as break command) within the current frame.
+23	        if(n == 1) {
+28	            while(n % 2 == 0) {
+34	            for(int i = 3; i * i < n; i += 2) {
+29	                printf(" %d", 2);
+30	                n /= 2;  // Divide n by 2 (integer division)
+31	            }
+32	
+33	            // Try all odd integers, from 3 to sqrt(n)
+34	            for(int i = 3; i * i < n; i += 2) {
+35	
+36	                // Print all occurrences of i in the prime factorization
+37	                while(n % i == 0) {
+38	                    printf(" %d", i);
+$1 = 49
+$2 = 3
+Breakpoint 2 at 0x400650: file prime_factor.c, line 34.
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=74) at prime_factor.c:17
+17	    if(n <= 0) {
+12	|*           This is about finding bugs.             *|
+13	|*                                                   *|
+14	\*****************************************************/
+15	
+16	void print_prime_factors(int n) {
+17	    if(n <= 0) {
+18	        printf("Only positive numbers are supported.\n");
+19	    }
+20	    else {
+21	        printf("Prime factors of %d:", n);
+Target native does not support this command.
+Target native does not support this command.
+Quit
+Starting program: /home/shay/a/tsai169/264/hw03/prime_factor 
+
+Breakpoint 1, print_prime_factors (n=6) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 2, print_prime_factors (n=3) at prime_factor.c:34
+34	            for(int i = 3; i * i < n; i += 2) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=1) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=0) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=48) at prime_factor.c:17
+17	    if(n <= 0) {
+Continuing.
+
+Breakpoint 2, print_prime_factors (n=3) at prime_factor.c:34
+34	            for(int i = 3; i * i < n; i += 2) {
+Continuing.
+
+Breakpoint 1, print_prime_factors (n=49) at prime_factor.c:17
+17	    if(n <= 0) {
+12	|*           This is about finding bugs.             *|
+13	|*                                                   *|
+14	\*****************************************************/
+15	
+16	void print_prime_factors(int n) {
+17	    if(n <= 0) {
+18	        printf("Only positive numbers are supported.\n");
+19	    }
+20	    else {
+21	        printf("Prime factors of %d:", n);
+21	        printf("Prime factors of %d:", n);
+23	        if(n == 1) {
+28	            while(n % 2 == 0) {
+
+Breakpoint 2, print_prime_factors (n=49) at prime_factor.c:34
+34	            for(int i = 3; i * i < n; i += 2) {
+29	                printf(" %d", 2);
+30	                n /= 2;  // Divide n by 2 (integer division)
+31	            }
+32	
+33	            // Try all odd integers, from 3 to sqrt(n)
+34	            for(int i = 3; i * i < n; i += 2) {
+35	
+36	                // Print all occurrences of i in the prime factorization
+37	                while(n % i == 0) {
+38	                    printf(" %d", i);
+39	                    n /= i; // Divide n by i (integer division)
+40	                }
+41	            }
+42	
+43	            if(n >= 3) {
+44	                printf(" %d", n);
+45	            }
+46	        }
+47	        printf("\n");
+48	    }
+37	                while(n % i == 0) {
+$3 = 49
+$4 = 3
+34	            for(int i = 3; i * i < n; i += 2) {
+$5 = 49
+29	                printf(" %d", 2);
+30	                n /= 2;  // Divide n by 2 (integer division)
+31	            }
+32	
+33	            // Try all odd integers, from 3 to sqrt(n)
+34	            for(int i = 3; i * i < n; i += 2) {
+35	
+36	                // Print all occurrences of i in the prime factorization
+37	                while(n % i == 0) {
+38	                    printf(" %d", i);
+37	                while(n % i == 0) {
+34	            for(int i = 3; i * i < n; i += 2) {
+$6 = 49
+$7 = 5
+43	            if(n >= 3) {
+44	                printf(" %d", n);
+39	                    n /= i; // Divide n by i (integer division)
+40	                }
+41	            }
+42	
+43	            if(n >= 3) {
+44	                printf(" %d", n);
+45	            }
+46	        }
+47	        printf("\n");
+48	    }
+47	        printf("\n");
+49	}
+main (argc=1, argv=0x7fffffffdd88) at test_prime_factor.c:12
+12		print_prime_factors(74); // 2 37
+"finish" not meaningful in the outermost frame.

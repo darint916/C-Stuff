@@ -1,0 +1,26 @@
+        -:    0:Source:huffman.c
+        -:    0:Programs:3
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "huffman.h"
+        -:    6:
+        3:    7:static int _compare_freq(const void* a, const void* b){
+        3:    8:	return ((TreeNode*)a) -> frequency - ((TreeNode*)b) -> frequency;
+        -:    9:}
+        -:   10:
+        1:   11:Node* make_huffman_pq(Frequencies freqs){
+        1:   12:	Node* head = NULL;
+        1:   13:	Node** a_head = &head;
+        -:   14:	TreeNode* new;
+      257:   15:	for(int i = 0; i <= 255; i++){
+      256:   16:		if(freqs[i] > 0){
+        3:   17:			new = malloc(sizeof(TreeNode));
+        3:   18:			*new = (TreeNode) {.character = i, .frequency = freqs[i], .right = NULL, .left = NULL};
+        3:   19:			pq_enqueue(a_head, new, _compare_freq);
+        -:   20:		}
+        -:   21:	}
+        1:   22:	return *a_head;
+        -:   23:}
+        -:   24:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab: */

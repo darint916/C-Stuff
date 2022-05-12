@@ -1,0 +1,28 @@
+        -:    0:Source:frequencies.c
+        -:    0:Programs:4
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "frequencies.h"
+        -:    6:#include <errno.h>
+        -:    7:#include <string.h>
+        -:    8:
+        2:    9:bool calc_frequencies(Frequencies freqs, const char* path, const char** a_error){
+        2:   10:	FILE *file = fopen(path, "r");
+        2:   11:	if(!file){
+        1:   12:		*a_error = strerror(errno);
+        1:   13:		return false;
+        -:   14:	}
+       25:   15:	while(true) {
+        -:   16:		uchar in;
+       26:   17:		fread(&in, sizeof(uchar), 1, file);
+       26:   18:		if(feof(file)){
+        1:   19:			fclose(file);
+        1:   20:			freqs[10]--;
+        1:   21:			return true;
+        -:   22:		}
+       25:   23:		freqs[in]++;
+        -:   24:	}
+        -:   25:}
+        -:   26:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab: */

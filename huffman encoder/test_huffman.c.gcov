@@ -1,0 +1,56 @@
+        -:    0:Source:test_huffman.c
+        -:    0:Graph:test_huffman.gcno
+        -:    0:Data:test_huffman.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <stdbool.h>
+        -:    4:#include <assert.h>
+        -:    5:#include "miniunit.h"
+        -:    6:#include "huffman.h"
+        -:    7:#include "bit_writer.h"
+        -:    8:
+        1:    9:static int _test(){
+        1:   10:	mu_start();
+        -:   11:
+        1:   12:	const char* path = "actual.txt";
+        -:   13:	const char* a_error;
+        -:   14:	const char* a_error2;
+        -:   15:	
+        1:   16:	Frequencies freq2 = {0};
+        1:   17:	calc_frequencies(freq2, "", &a_error2);
+        -:   18:	
+        1:   19:	Node* nullNode = make_huffman_pq(freq2);
+       1*:   20:	mu_check(nullNode == NULL);
+        1:   21:	TreeNode* nullTree = make_huffman_tree(nullNode);
+       1*:   22:	mu_check(nullTree == NULL);
+        -:   23:
+        1:   24:	Frequencies freq = {0};
+       1*:   25:	mu_check(calc_frequencies(freq, path, &a_error));
+      257:   26:	for(uint64_t i = 0; i <= 255; i++){
+      256:   27:		if(freq[i] != 0){
+       10:   28:			printf(" %c, %ld : #%4ld\n",(char)i, i, freq[i]);
+        -:   29:		}
+        -:   30:	}
+        1:   31:	Node* node = make_huffman_pq(freq);
+        -:   32:	//printf("sec freq: %ld\n", ((TreeNode*)(node -> next -> a_value)) -> frequency);
+        -:   33:	
+        1:   34:	TreeNode* treeHead = make_huffman_tree(node);
+        1:   35:	const char* path2 = "expected.txt";
+        1:   36:	BitWriter writer = open_bit_writer(path2);
+        1:   37:	uint8_t* txt = (uint8_t*)"huffman fluffs many mums";
+        1:   38:	write_compressed(treeHead, &writer, txt);
+        -:   39:	
+        1:   40:	write_coding_table(treeHead, &writer);
+        1:   41: 	close_bit_writer(&writer);
+        1:   42:	destroy_huffman_tree(&treeHead);
+       1*:   43:	mu_check(treeHead == NULL);
+        1:   44:	mu_end();
+        -:   45:}
+        -:   46:
+        1:   47:int main(int argc, char* argv[]) {
+       1*:   48:	mu_run(_test);
+        1:   49:	return EXIT_SUCCESS;
+        -:   50:}
+        -:   51:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab: */

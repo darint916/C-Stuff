@@ -1,0 +1,43 @@
+        -:    0:Source:test_count_words.c
+        -:    0:Graph:test_count_words.gcno
+        -:    0:Data:test_count_words.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include "count_words.h"
+        -:    4:#include "miniunit.h"
+        1:    5:int _test_empty(){
+        1:    6:	mu_start();
+       1*:    7:	mu_check(count_words("") == 0);
+        1:    8:	mu_end();
+        -:    9:}
+        -:   10:
+        1:   11:int _test_simple(){
+        1:   12:	mu_start();
+       1*:   13:	mu_check(count_words("apple") == 1);
+       1*:   14:	mu_check(count_words("boring boxes") == 2);
+        1:   15:	mu_end();
+        -:   16:}
+        -:   17:
+        2:   18:int _test_hard(){
+        2:   19:	mu_start();
+       2*:   20:	mu_check(count_words("eeeeeeee e") == 2);
+       2*:   21:	mu_check(count_words("Marys mongoose") == 2);
+        2:   22:	mu_check(2 == 1);
+       2*:   23:	mu_check(2 == 3);
+        2:   24:	mu_end();
+        -:   25:}
+        1:   26:int main(int argc, char* argv[]) {
+       1*:   27:	mu_run(_test_empty);
+       1*:   28:	mu_run(_test_hard);
+       1*:   29:	mu_run(_test_simple);
+        1:   30:	log_int(count_words("My apples are sweet."));
+        -:   31:
+        1:   32:	log_int(count_words("My friend's apples are sweeter."));
+        -:   33:
+        1:   34:	log_int(count_words("A pear is sweeter than an apple.."));
+        -:   35:
+        1:   36:	return EXIT_SUCCESS;
+        -:   37:}
+        -:   38:/* vim: set tabstop=4 shiftwidth=4 fileencoding=utf-8 noexpandtab: */
